@@ -87,6 +87,47 @@ module.exports = {
   removeFile,
 };
 
-``
+```
 
+# Route
+
+```
+const controller = require("../controller/category.controller");
+const { upload } = require("../util/helper");
+
+const category = (app) => {
+  app.post("/api/category", upload.single("upload_emp"), controller.create);
+};
+
+module.exports = category;
+
+```
+
+# Controller
+
+```const db = require("../util/db");
+
+const create = async (req, res) => {
+
+  try {
+    const { name, description } = req.body;
+    let filename = null;
+    if (req.file) {
+      filename = req.file.filename;
+    }
+    const sql =
+      "INSERT INTO category (name, description, image) VALUES (?,?,?)";
+    const param = [name, description, filename];
+    const data = await db.query(sql, param);
+    res.json({
+      body: req.body,
+      file: req.file,
+    });
+  } catch (e) {
+    res.sendStatus(500);
+    console.log(e);
+  }
+};
+
+module.exports = { create };
 ```
